@@ -1,5 +1,9 @@
 #pragma once
 
+#include <cstdint>
+#include <cstring>
+#include <stdexcept>
+
 class Memory {
 public:
 	Memory(size_t size) :

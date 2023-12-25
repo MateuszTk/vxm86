@@ -3,6 +3,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cstdint>
+#include <stdexcept>
 
 #include "Memory.hpp"
 #include "Registers.hpp"

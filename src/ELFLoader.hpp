@@ -27,6 +27,11 @@ public:
 	// Load the ELF file into memory and return the entry point.
 	uint32_t load(Memory& memory) {
 		uint32_t entry = *(uint32_t*)(data.data() + 0x18);
+
+		uint32_t shoff = *(uint32_t*)(data.data() + 0x20);
+		uint16_t shentsize = *(uint16_t*)(data.data() + 0x2E);
+		uint16_t shnum = *(uint16_t*)(data.data() + 0x30);
+
 		uint32_t phoff = *(uint32_t*)(data.data() + 0x1C);
 		uint16_t phentsize = *(uint16_t*)(data.data() + 0x2A);
 		uint16_t phnum = *(uint16_t*)(data.data() + 0x2C);

@@ -43,7 +43,6 @@ void elf() {
 
 	ELFLoader loader("./elf/elf_test");
 	uint32_t entry = loader.load(mem);
-	mem.setModifiedRangeFrom(entry);
 
 	CPU cpu(&mem);
 	cpu.setDebug(true);
@@ -51,7 +50,7 @@ void elf() {
 	cpu.getRegisters().set(Registers::Reg::ESP, 0x0f'ff'ff'00);
 
 	cpu.run();
-	//cpu.print();
+	cpu.print();
 }
 
 int main() {

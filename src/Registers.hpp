@@ -35,8 +35,33 @@ public:
 		EFLAGS = 0b100001
 	};
 
+	enum class Flag : uint32_t {
+		CF = 0b0000'0000'0001,
+		PF = 0b0000'0000'0100,
+		AF = 0b0000'0001'0000,
+		ZF = 0b0000'0100'0000,
+		SF = 0b0000'1000'0000,
+		OF = 0b1000'0000'0000
+	};
+
 	Registers() {
 		this->reset();
+	}
+
+	void setFlag(Flag flag, bool value) {
+		uint32_t flags = get(Reg::EFLAGS);
+		if (value) {
+			flags |= (uint32_t)flag;
+		}
+		else {
+			flags &= ~(uint32_t)flag;
+		}
+		set(Reg::EFLAGS, flags);
+	}
+
+	bool getFlag(Flag flag) {
+		uint32_t flags = get(Reg::EFLAGS);
+		return (flags & (uint32_t)flag) > 0;
 	}
 
 	void set(Reg reg, bool w, bool bit16, uint32_t value) {

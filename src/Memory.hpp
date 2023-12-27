@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <cstring>
 #include <stdexcept>
+#include <iostream>
+#include <iomanip>
 
 class Memory {
 public:

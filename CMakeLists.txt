@@ -12,7 +12,9 @@ endif()
 project ("vxm86")
 
 # Add source to this project's executable.
-add_executable (vxm86 "src/main.cpp")
+file (GLOB_RECURSE SOURCES "src/*.cpp")
+
+add_executable (vxm86 ${SOURCES})
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET vxm86 PROPERTY CXX_STANDARD 20)

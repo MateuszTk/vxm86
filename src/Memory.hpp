@@ -82,10 +82,12 @@ public:
 
 			int firstByte = this->data[i];
 			bool wasEmpty = true;
+			std::string ascii = "";
 
 			for (size_t j = 0; j < rowSize && i + j < modifiedToCeil; j++) {
 				if (i + j == eip && emptyLine == 0) {
 					std::cout << "\033[1;31m";
+					ascii += "\033[1;31m";
 				}
 
 				int cbyte = this->data[j + i];
@@ -95,13 +97,18 @@ public:
 
 				if (emptyLine == 0) {
 					std::cout << std::setw(2) << cbyte << " ";
+					ascii.push_back((cbyte < ' ' || cbyte > '~') ? '.' : cbyte);
 				}
 
 				if (i + j == eip && emptyLine == 0) {
 					std::cout << "\033[0m";
+					ascii += "\033[0m";
 				}
 			}
+
 			if (emptyLine == 0) {
+				std::cout << ' ' << ascii;
+				ascii.clear();
 				std::cout << std::endl;
 			}		
 

@@ -105,12 +105,10 @@ public:
 					ascii += "\033[0m";
 				}
 			}
-		
-			
-			std::cout << ' ' << ascii;
-			ascii.clear();
 
 			if (emptyLine == 0) {
+				std::cout << ' ' << ascii;
+				ascii.clear();
 				std::cout << std::endl;
 			}		
 

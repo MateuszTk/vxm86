@@ -4,6 +4,7 @@
 #include "Registers.hpp"
 #include <array>
 #include <functional>
+#include <limits>
 
 class CPU {
 public:

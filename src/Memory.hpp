@@ -74,6 +74,7 @@ public:
 		size_t modifiedToCeil = this->modifiedTo + rowSize - (this->modifiedTo % rowSize);
 		int emptyLine = 0;
 
+		std::string ascii = "";
 		for (size_t i = (modifiedFrom / rowSize) * rowSize; i < modifiedToCeil; i += rowSize) {
 			if (emptyLine == 0) {
 				std::cout << std::setw(8) << i << ": ";
@@ -82,7 +83,10 @@ public:
 
 			int firstByte = this->data[i];
 			bool wasEmpty = true;
-			std::string ascii = "";
+			
+			if (emptyLine == 0) {
+				ascii = "";
+			}
 
 			for (size_t j = 0; j < rowSize && i + j < modifiedToCeil; j++) {
 				if (i + j == eip && emptyLine == 0) {

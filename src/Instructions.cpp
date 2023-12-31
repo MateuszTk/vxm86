@@ -85,9 +85,15 @@ void CPU::initInstructions() {
 		return true;
 	};
 
-	instructions[0b0000'0000 >> 2] = [&](uint8_t opcode, bool sizePrefix) -> bool {
+	instructions[0b0000'0000 >> 2] = instructions[0b0010'1000 >> 2] = [&](uint8_t opcode, bool sizePrefix) -> bool {
 		// add r/m, r
 		// [0000 00 d w] [mod reg r/m]
+
+		// sub r/m, r
+		// [0010 10 d w] [mod reg r/m]
+
+		bool isAdd = (opcode & 0b1111'1100) == 0b0000'0000;
+
 		bool w = (opcode & 0b0000'0001) > 0;
 		bool d = (opcode & 0b0000'0010) > 0;
 
@@ -97,19 +103,25 @@ void CPU::initInstructions() {
 		uint8_t reg = (modregrm & 0b0011'1000) >> 3;
 		uint8_t rm = (modregrm & 0b0000'0111);
 
-		uint32_t value1 = this->registers.get((Registers::Reg)reg, w, sizePrefix);
+		uint32_t valueReg = this->registers.get((Registers::Reg)reg, w, sizePrefix);
 
 		// rmRead will increment eip if needed to read immediate
 		uint32_t eipBackup = this->registers.get(Registers::Reg::EIP);
-		uint32_t value2 = rmRead(w, sizePrefix, mod, rm);
+		uint32_t valueRm = rmRead(w, sizePrefix, mod, rm);
 
-		uint32_t result = value1 + value2;
+		uint32_t result = valueReg + valueRm;
 		if (d) {
-			// add r, r/m
+			if (!isAdd) {
+				result = valueReg - valueRm;
+			}
+			// add/sub r, r/m
 			this->registers.set((Registers::Reg)reg, w, sizePrefix, result);
 		}
 		else {
-			// add r/m, r
+			if (!isAdd) {
+				result = valueRm - valueReg;
+			}
+			// add/sub r/m, r
 			// restore eip to before rmRead, since we need to read the immediate again
 			this->registers.set(Registers::Reg::EIP, eipBackup);
 			rmWrite(w, sizePrefix, mod, rm, result);
@@ -506,7 +518,7 @@ void CPU::initInstructions() {
 		// [0100 1 reg]
 
 		uint8_t reg = opcode & 0b111;
-		bool inc = (opcode & 0b100) == 0;
+		bool inc = (opcode & 0b1000) == 0;
 
 		uint32_t value = this->registers.get((Registers::Reg)reg, true, sizePrefix);
 		if (inc) value++;
@@ -514,5 +526,29 @@ void CPU::initInstructions() {
 
 		this->registers.set((Registers::Reg)reg, true, sizePrefix, value);
 		return true;
+	};
+
+	instructions[0b1000'1100 >> 2] = [&](uint8_t opcode, bool sizePrefix) -> bool {
+		if ((opcode & 0b11) == 0b01) {
+			// lea
+			uint8_t modregrm = this->readImmediate(false, false);
+			uint8_t mod = (modregrm >> 6) & 0b11;
+			uint8_t reg = (modregrm >> 3) & 0b111;
+			uint8_t rm = modregrm & 0b111;
+
+			if (mod == 0b11) {
+				std::cout << "Invalid combination of opcode and operands in: " << (int)opcode << std::endl;
+				return false;
+			}
+
+			uint32_t ea = getEffectiveAddress(mod, rm);
+
+			this->registers.set((Registers::Reg)reg, true, sizePrefix, ea);
+			return true;
+		}
+		else {
+			std::cout << "Unknown opcode: " << (int)opcode << std::endl;
+			return false;
+		}
 	};
 }
